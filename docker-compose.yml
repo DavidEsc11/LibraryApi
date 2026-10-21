@@ -1,0 +1,25 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: library-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Your_password123"
+    ports:
+      - "1433:1433"
+    volumes:
+      - library-data:/var/opt/mssql
+
+  api:
+    build: .
+    container_name: library-api
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=LibraryDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True;Encrypt=False"
+    ports:
+      - "8080:8080"
+
+volumes:
+  library-data:
